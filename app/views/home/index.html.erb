@@ -1,0 +1,75 @@
+    <script>
+        var pusher = new Pusher('3178885c3e1f517f03e2', {
+          cluster: 'ap1',
+          encrypted: true
+        });
+    </script>
+
+<div class="container">
+
+	 <div class="title">
+            <h1>Ruby Chat</h1>
+        </div>
+
+    <div class="row wrapper col-md" >
+
+        <div class="posts col-md-6" id="post_section">
+            <% @chats.each do |chat| %>
+                <div class="post-card col-12">
+
+                    <div class="body-trunc">
+                        <p> <%= chat.message %>  </p>
+
+                    </div>
+                </div>
+            <% end %>
+        </div>
+
+
+        <div class="write_message col-md-6">
+
+        	<form method="POST" action="/chat/store" enctype="multipart/form-data" class="post-form">
+	             <%= token_tag %>     
+	           
+	             <div class="form-group">
+	                <label for="message">Create Message</label>
+	                <textarea name="message" class="form-control" cols="30" rows="10"></textarea>
+	            </div>
+	            <div class="from-group">
+	                <div><input type="submit" value="Send Message"></div>
+	            </div>
+			</form>
+        	
+
+        </div>
+
+
+
+
+
+      </div> <!-- END OF WRAPPER -->
+
+</div> <!-- END OF CONTAINER -->
+
+
+
+ <script>
+        var channel = pusher.subscribe('posts-channel');
+        channel.bind('new-post', function(data) {
+          
+            let post_id = data.id
+            let chat_message = data.message;
+            
+
+            let div = document.getElementById('post_section');
+            let new_content = document.createElement("div");
+            new_content.innerHTML = `
+                <div class="post-card">
+                  
+                    <div class="body-trunc">
+                        <p>${chat_message}</p>
+                    </div>
+                </div>`;
+            div.insertBefore(new_content, div.firstChild);
+        });
+    </script> 
